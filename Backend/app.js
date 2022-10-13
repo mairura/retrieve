@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
     res.send("Welcome Home")
 })
 
-app.post("/user", async (req, res) => {
+app.post("/register", async (req, res) => {
     try{
         //Get user inputs
         const { name, age, nationality, phoneNumber } = req.body;
@@ -47,9 +47,10 @@ app.post("/user", async (req, res) => {
         //Create an instance in our DB
         const user = await User.create({
             name: name,
+            username: username,
             age: age,
             nationality: nationality,
-            phoneNumber: phoneNumber
+            phoneNumber: phoneNo
         })
 
         //Save user to DB
@@ -64,22 +65,44 @@ app.post("/user", async (req, res) => {
     }
 })
 
+//Login user
+app.post("/login", async (req, res) => {
+    try{
+        //Get user data
+        const { username, phoneNumber} = req.body;
+
+        //Validate if user exists
+        const user = await User.findOne({username});
+
+    }catch(err){
+        console.log("Error", err.message)
+    }
+})
+
 //Retrieve data from DB
+// app.get("/user", async (req, res) => {
+
+//     User.find({}, (err, data) => {
+//         if(err) {
+//             res.status(500).send(err.message);
+//             console.log(err)
+//         }else{
+//             res.status(200).send(data)
+//         }
+//     })     
+// })
+
+//Fetch idividual user
 app.get("/user", (req, res) => {
-    const resultArray = [];
-    mongoose.connect(db, function(err, db){
-        // assert.equal(null, err);
-        const profile = db.collection("userforms").find();
-        console.log("User profile:", profile)
-        profile.forEach(function(err, doc) {
-        // assert.equal(null, err);
-        resultArray.push(doc)
-    }, function(){
-        db.close();
-        res.render("app", {items: resultArray})
-    })
+    
+
+    User.findById("63481e5067d91d6cb532df19", function(err, data){
+        if(err) res.json(err)
+        else res.send(data);
     })
 })
+
+
 
 //Server listening to routes
 app.listen(PORT, () => {
